@@ -10,6 +10,26 @@ from env_surgeon.merger import ConflictStrategy, MergeConflictError, merge_env_f
 from env_surgeon.parser import parse_env_file
 
 
+def _load_env_files(sources: List[str]) -> tuple:
+    """Parse each source path into an env file object.
+
+    Returns a tuple of (env_files, error_code) where error_code is non-zero
+    on failure and env_files is an empty list in that case.
+    """
+    env_files = []
+    for src in sources:
+        path = Path(src)
+        if not path.exists():
+            print(f"error: file not found: {path}", file=sys.stderr)
+            return [], 2
+        try:
+            env_files.append(parse_env_file(path))
+        except OSError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return [], 2
+    return env_files, 0
+
+
 def merge_command(
     sources: List[str],
     output: Optional[str] = None,
@@ -29,17 +49,9 @@ def merge_command(
         print(f"error: unknown strategy '{strategy}'. Choose from: {valid}", file=sys.stderr)
         return 2
 
-    env_files = []
-    for src in sources:
-        path = Path(src)
-        if not path.exists():
-            print(f"error: file not found: {path}", file=sys.stderr)
-            return 2
-        try:
-            env_files.append(parse_env_file(path))
-        except OSError as exc:
-            print(f"error: {exc}", file=sys.stderr)
-            return 2
+    env_files, error_code = _load_env_files(sources)
+    if error_code:
+        return error_code
 
     try:
         result = merge_env_files(env_files, strategy=conflict_strategy)
