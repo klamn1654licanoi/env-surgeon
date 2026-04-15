@@ -87,3 +87,11 @@ def test_skips_comment_only_lines(tmp_path):
     path = _write_env(tmp_path, "# just a comment\n# another comment\n")
     result = parse_env_file(path)
     assert result.entries == []
+
+
+def test_line_numbers_are_correct(tmp_path):
+    """Verify that line_number reflects the actual line in the file."""
+    path = _write_env(tmp_path, "# comment\nFIRST=1\n\nSECOND=2\n")
+    result = parse_env_file(path)
+    assert result.entries[0].line_number == 2
+    assert result.entries[1].line_number == 4
