@@ -97,3 +97,18 @@ def test_comments_and_blanks_ignored(tmp_path):
     env_file = parse_env_file(path)
     result = audit_env_file(env_file)
     assert result.issues == []
+
+
+def test_multiple_empty_values_all_warned(tmp_path):
+    """Each key with an empty value should produce its own warning."""
+    path = _write_env(tmp_path, """
+        API_KEY=
+        SECRET=
+        HOST=localhost
+    """)
+    env_file = parse_env_file(path)
+    result = audit_env_file(env_file)
+    warnings = [i for i in result.issues if i.severity == "warning"]
+    warned_keys = {w.key for w in warnings}
+    assert len(warnings) == 2
+    assert warned_keys == {"API_KEY", "SECRET"}
