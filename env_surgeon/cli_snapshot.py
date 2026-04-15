@@ -42,7 +42,11 @@ def snapshot_diff_command(
     env_file: Path, snapshot_file: Path, no_color: bool
 ) -> None:
     """Compare ENV_FILE against a previously saved SNAPSHOT_FILE."""
-    snap = load_snapshot(snapshot_file)
+    try:
+        snap = load_snapshot(snapshot_file)
+    except Exception as exc:  # noqa: BLE001
+        raise click.ClickException(f"Failed to load snapshot: {exc}") from exc
+
     result = diff_against_snapshot(env_file, snap)
 
     if result.is_clean:
