@@ -33,6 +33,13 @@ class EnvFile:
         """Return a plain key→value mapping (last value wins for duplicates)."""
         return {e.key: e.value for e in self.entries}
 
+    def get(self, key: str) -> Optional[EnvEntry]:
+        """Return the last :class:`EnvEntry` matching *key*, or ``None``."""
+        for entry in reversed(self.entries):
+            if entry.key == key:
+                return entry
+        return None
+
 
 def _strip_quotes(value: str) -> str:
     """Remove surrounding single or double quotes from a value."""
