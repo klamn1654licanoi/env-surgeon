@@ -45,9 +45,11 @@ def group_command(envfile: str, prefix: tuple, sep: str, show_ungrouped: bool) -
         click.echo()
 
     if not result.is_clean():
+        ungrouped_count = len(result.ungrouped)
+        hint = " Use --show-ungrouped to display them." if not show_ungrouped else ""
         click.echo(
             click.style(
-                f"{len(result.ungrouped)} ungrouped entry/entries.",
+                f"{ungrouped_count} ungrouped entry/entries.{hint}",
                 fg="yellow",
             ),
             err=True,
