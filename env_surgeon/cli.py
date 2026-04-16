@@ -1,6 +1,5 @@
-"""env-surgeon CLI entry point."""
+"""Main CLI entry point for env-surgeon."""
 import click
-
 from env_surgeon.cli_audit import audit_command
 from env_surgeon.cli_diff import diff_command
 from env_surgeon.cli_merge import merge_command
@@ -16,26 +15,31 @@ from env_surgeon.cli_sort import sort_command
 from env_surgeon.cli_dedup import dedup_command
 from env_surgeon.cli_patch import patch_command
 from env_surgeon.cli_profile import profile_command
+from env_surgeon.cli_group import group_command
+from env_surgeon.cli_promote import promote_command
 
 
 @click.group()
+@click.version_option()
 def cli() -> None:
     """env-surgeon: audit, merge, and diff .env files."""
 
 
-cli.add_command(audit_command)
-cli.add_command(diff_command)
-cli.add_command(merge_command)
-cli.add_command(mask_command)
-cli.add_command(snapshot_command)
-cli.add_command(snapshot_diff_command)
-cli.add_command(report_command)
-cli.add_command(export_command)
-cli.add_command(interpolate_command)
-cli.add_command(lint_command)
-cli.add_command(template_command)
-cli.add_command(rename_command)
-cli.add_command(sort_command)
-cli.add_command(dedup_command)
-cli.add_command(patch_command)
-cli.add_command(profile_command)
+cli.add_command(audit_command, "audit")
+cli.add_command(diff_command, "diff")
+cli.add_command(merge_command, "merge")
+cli.add_command(mask_command, "mask")
+cli.add_command(snapshot_command, "snapshot")
+cli.add_command(snapshot_diff_command, "snapshot-diff")
+cli.add_command(report_command, "report")
+cli.add_command(export_command, "export")
+cli.add_command(interpolate_command, "interpolate")
+cli.add_command(lint_command, "lint")
+cli.add_command(template_command, "template")
+cli.add_command(rename_command, "rename")
+cli.add_command(sort_command, "sort")
+cli.add_command(dedup_command, "dedup")
+cli.add_command(patch_command, "patch")
+cli.add_command(profile_command, "profile")
+cli.add_command(group_command, "group")
+cli.add_command(promote_command, "promote")
