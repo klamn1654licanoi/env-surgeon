@@ -24,6 +24,27 @@ def _severity_label(severity: AuditSeverity, *, color: bool) -> str:
     return label
 
 
+def _print_summary(result, *, use_color: bool) -> None:
+    """Print a summary line with issue counts after listing all issues."""
+    error_count = sum(1 for i in result.issues if i.severity == AuditSeverity.ERROR)
+    warning_count = sum(1 for i in result.issues if i.severity == AuditSeverity.WARNING)
+    info_count = sum(1 for i in result.issues if i.severity == AuditSeverity.INFO)
+
+    parts = []
+    if error_count:
+        parts.append(f"{error_count} error(s)")
+    if warning_count:
+        parts.append(f"{warning_count} warning(s)")
+    if info_count:
+        parts.append(f"{info_count} info(s)")
+
+    summary = "Summary: " + ", ".join(parts)
+    if use_color:
+        color = "red" if error_count else "yellow" if warning_count else "cyan"
+        summary = click.style(summary, fg=color)
+    click.echo(summary)
+
+
 @click.command("audit")
 @click.argument("envfile", type=click.Path(exists=True, dir_okay=False))
 @click.option(
@@ -61,6 +82,8 @@ def audit_command(envfile: str, no_color: bool, strict: bool) -> None:
         line_info = f" (line {issue.line})" if issue.line is not None else ""
         key_info = f" [{issue.key}]" if issue.key else ""
         click.echo(f"{label}{key_info}{line_info}: {issue.message}")
+
+    _print_summary(result, use_color=use_color)
 
     if result.has_errors() or (strict and result.has_warnings()):
         sys.exit(1)
